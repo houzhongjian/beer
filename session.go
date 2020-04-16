@@ -6,7 +6,9 @@ import (
 	"strings"
 	"sync"
 	"github.com/google/uuid"
+	"time"
 )
+const SESSION_NAME = "BEER_SESSION"
 
 type sessionManager struct {
 	lock sync.RWMutex
@@ -36,7 +38,7 @@ func (*sessionManager) createSessionId(c *Context) *session {
 	id := uuid.New().String()
 	id = strings.Replace(id,"-","",-1)
 	http.SetCookie(c.Response, &http.Cookie{
-		Name:       "BEER_SESSION",
+		Name:       SESSION_NAME,
 		Value:      id,
 		Path:       "/",
 		HttpOnly:   true,
@@ -86,8 +88,16 @@ func (s *session) Set(key string, val interface{}) {
 	s.data[key] = val
 }
 
-func (sm *sessionManager) Destroy(sessionId string) {
+func (sm *sessionManager) Destroy(c *Context, s *session) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
-	delete(sm.item, sessionId)
+	delete(sm.item, s.id)
+
+	//删除cookie.
+	http.SetCookie(c.Response, &http.Cookie{
+		Name: SESSION_NAME,
+		MaxAge: -1,
+		Expires: time.Now().Add(-100 * time.Hour),// Set expires for older versions of IE
+		Path: "/",
+	})
 }

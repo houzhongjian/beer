@@ -15,9 +15,15 @@ func main() {
 	srv.GET("/", Default)
 	srv.GET("/detail", Detail)
 	srv.GET("/login/:userid/:name/:age", Login)
+	srv.GET("/rem", Rem)
 	if err := srv.Run(":8088"); err != nil {
 		panic(err)
 	}
+}
+
+func Rem(c *beer.Context)  {
+	sess, _ := beer.Session().Start(c)
+	beer.Session().Destroy(c, sess)
 }
 
 func Default(c *beer.Context) {
@@ -47,4 +53,5 @@ func Detail(c *beer.Context) {
 
 	msg := fmt.Sprintf("uid = %s, name = %s, age = %s", uid, name, age)
 	c.String(msg)
+
 }
