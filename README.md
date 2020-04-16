@@ -1,4 +1,4 @@
-<img src='./logo.jpeg' width="400">
+<img src='./logo.jpeg'>
 
 ## Beer
 Beer是一个使用Golang开发的轻量级web框架，参考了一部分的gin代码，所有很多方法与gin的类似。**目前还处于维护阶段不能用于生产环境**

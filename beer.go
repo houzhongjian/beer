@@ -9,22 +9,27 @@ import (
 
 type Engine interface {
 	Run(addr string) error
-	GET(path string, handler beerHandlerFunc)
-	POST(path string, handler beerHandlerFunc)
-	DELETE(path string, handler beerHandlerFunc)
-	PUT(path string, handler beerHandlerFunc)
+	GET(path string, handler hFunc)
+	POST(path string, handler hFunc)
+	DELETE(path string, handler hFunc)
+	PUT(path string, handler hFunc)
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
-type beerHandlerFunc func(*Context)
+type hFunc func(*Context)
+
+type beerHandler struct {
+	Method string
+	Path string
+}
 
 type Handler struct {
-	router map[string]beerHandlerFunc
+	router map[beerHandler]hFunc
 }
 
 func New() Engine {
 	e := new(Handler)
-	e.router = make(map[string]beerHandlerFunc)
+	e.router = make(map[beerHandler]hFunc)
 	return e
 }
 
@@ -36,10 +41,10 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	paramsUrl := strings.Split(r.RequestURI,"?")
 	path := paramsUrl[0]
 	paramsMp := map[string]string{}
-	 for router, funcName := range srv.router {
+	for router, handler := range srv.router {
 		//判断当前的路由.
 	 	//判断是否有:.
-	 	index := strings.Index(router,":")
+	 	index := strings.Index(router.Path,":")
 	 	if index > -1 {
 	 		//正则路由.
 	 		//1.先找出参数字段:[\w]+
@@ -48,8 +53,8 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				log.Printf("err:%+v\n",err)
 				return
 			}
-			sArr := reg.FindAllString(router, -1)
-			route := "^"+router
+			sArr := reg.FindAllString(router.Path, -1)
+			route := "^"+router.Path
 			for _, param := range sArr {
 				//将router中的:xxx部分替换成[\w]+.
 				route = strings.Replace(route, param, `[\w]+`,-1)
@@ -64,7 +69,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			if reg.MatchString(path) {
 				sArr := strings.Split(path,"/")
-				rArr := strings.Split(router,"/")
+				rArr := strings.Split(router.Path,"/")
 
 				for i := 0; i < len(sArr); i++ {
 					if sArr[i] != rArr[i] {
@@ -74,25 +79,36 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
+				if router.Method != r.Method {
+					_, _ = w.Write([]byte("not found"))
+					return
+				}
 				ctx := &Context{
+					Method: r.Method,
 					Request:  r,
 					Response: w,
 					Params: paramsMp,
 				}
-				funcName(ctx)
+				handler(ctx)
 				return
 			}
 		}
 	 }
 
-	funcName, ok := srv.router[r.RequestURI]
+	 h := beerHandler{
+		 Method: r.Method,
+		 Path:   r.RequestURI,
+	 }
+	handler, ok := srv.router[h]
 	if !ok {
 		_, _ = w.Write([]byte("not found"))
 		return
 	}
+
 	ctx := &Context{
+		Method: r.Method,
 		Request:  r,
 		Response: w,
 	}
-	funcName(ctx)
+	handler(ctx)
 }

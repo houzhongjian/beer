@@ -6,9 +6,10 @@ import (
 
 //Context.
 type Context struct {
+	Method   string
 	Request  *http.Request
 	Response http.ResponseWriter
-	Params map[string]string
+	Params   map[string]string
 }
 
 func (c *Context) String(msg string) {
