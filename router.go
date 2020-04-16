@@ -1,5 +1,26 @@
 package beer
 
+import (
+	"os"
+	"path/filepath"
+)
+
+func (srv *Handler) Static(path string, dir string)  {
+	srv.createFileServer(path, dir)
+}
+
+func(srv *Handler) createFileServer(fpath string, dir string) {
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			srv.fsRouter[fpath+info.Name()] = path
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (srv *Handler) GET(path string, handler hFunc) {
 	srv.handle("GET", path, handler)
 }

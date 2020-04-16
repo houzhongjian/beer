@@ -14,6 +14,7 @@ type Engine interface {
 	DELETE(path string, handler hFunc)
 	PUT(path string, handler hFunc)
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
+	Static(path string, dir string)
 }
 
 type hFunc func(*Context)
@@ -25,11 +26,13 @@ type beerHandler struct {
 
 type Handler struct {
 	router map[beerHandler]hFunc
+	fsRouter map[string]string
 }
 
 func New() Engine {
 	e := new(Handler)
 	e.router = make(map[beerHandler]hFunc)
+	e.fsRouter = make(map[string]string)
 	return e
 }
 
@@ -40,6 +43,15 @@ func (srv *Handler) Run(addr string) error {
 func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	paramsUrl := strings.Split(r.RequestURI,"?")
 	path := paramsUrl[0]
+
+	//判断是否为资源文件.
+	fPath, ok := srv.fsRouter[path]
+	if ok {
+		//返回文件.
+		http.ServeFile(w, r, fPath)
+		return
+	}
+
 	paramsMp := map[string]string{}
 	for router, handler := range srv.router {
 		//判断当前的路由.

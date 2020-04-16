@@ -10,7 +10,10 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	srv := beer.New()
 
-	beer.Loadini("./app.ini")
+	srv.Static("/img/", "./public/image")
+	srv.Static("/conf/", "./public/conf/")
+
+	beer.Loadini("./public/conf/app.ini")
 
 	srv.GET("/", Default)
 	srv.GET("/detail", Detail)
