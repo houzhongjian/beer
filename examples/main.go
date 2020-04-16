@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	srv := beer.New()
 
 	srv.Static("/img/", "./public/image")
