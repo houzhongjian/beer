@@ -23,7 +23,7 @@ func main() {
 
 func Rem(c *beer.Context)  {
 	sess, _ := beer.Session().Start(c)
-	beer.Session().Destroy(c, sess)
+	beer.Session().Destroy(sess)
 }
 
 func Default(c *beer.Context) {

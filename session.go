@@ -20,6 +20,8 @@ var sess *sessionManager
 type session struct {
 	id string
 	data map[string]interface{}
+	response http.ResponseWriter
+	request *http.Request
 }
 
 func init() {
@@ -46,6 +48,8 @@ func (*sessionManager) createSessionId(c *Context) *session {
 	s := &session{
 		id:   id,
 		data: make(map[string]interface{}),
+		request: c.Request,
+		response: c.Response,
 	}
 	sess.item[id] = s
 	return s
@@ -88,13 +92,13 @@ func (s *session) Set(key string, val interface{}) {
 	s.data[key] = val
 }
 
-func (sm *sessionManager) Destroy(c *Context, s *session) {
+func (sm *sessionManager) Destroy(s *session) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	delete(sm.item, s.id)
 
 	//删除cookie.
-	http.SetCookie(c.Response, &http.Cookie{
+	http.SetCookie(s.response, &http.Cookie{
 		Name: SESSION_NAME,
 		MaxAge: -1,
 		Expires: time.Now().Add(-100 * time.Hour),// Set expires for older versions of IE
