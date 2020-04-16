@@ -1,7 +1,7 @@
 package main
 
 import (
-	"beer"
+	"github.com/houzhongjian/beer"
 	"fmt"
 	"log"
 )
