@@ -1,13 +1,14 @@
 package beer
 
 import (
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"strings"
 	"sync"
-	"github.com/google/uuid"
 	"time"
 )
+
 const SESSION_NAME = "BEER_SESSION"
 
 type sessionManager struct {
@@ -18,10 +19,10 @@ type sessionManager struct {
 var sess *sessionManager
 
 type session struct {
-	id string
-	data map[string]interface{}
+	id       string
+	data     map[string]interface{}
 	response http.ResponseWriter
-	request *http.Request
+	request  *http.Request
 }
 
 func init() {
@@ -38,17 +39,17 @@ func Session() *sessionManager {
 
 func (*sessionManager) createSessionId(c *Context) *session {
 	id := uuid.New().String()
-	id = strings.Replace(id,"-","",-1)
+	id = strings.Replace(id, "-", "", -1)
 	http.SetCookie(c.Response, &http.Cookie{
-		Name:       SESSION_NAME,
-		Value:      id,
-		Path:       "/",
-		HttpOnly:   true,
+		Name:     SESSION_NAME,
+		Value:    id,
+		Path:     "/",
+		HttpOnly: true,
 	})
 	s := &session{
-		id:   id,
-		data: make(map[string]interface{}),
-		request: c.Request,
+		id:       id,
+		data:     make(map[string]interface{}),
+		request:  c.Request,
 		response: c.Response,
 	}
 	sess.item[id] = s
@@ -61,23 +62,23 @@ func (sess *sessionManager) Start(c *Context) (s *session, err error) {
 
 	//判断是否有cookieid.
 	cookie, err := c.Request.Cookie("BEER_SESSION")
-	if err != nil && err != http.ErrNoCookie  {
-		log.Printf("err:%+v\n",err)
+	if err != nil && err != http.ErrNoCookie {
+		log.Printf("err:%+v\n", err)
 		return s, err
 	}
 	//没有则创建，有则跳过.
 	if cookie == nil {
-		return sess.createSessionId(c),nil
+		return sess.createSessionId(c), nil
 	}
 
 	//判断当前的cookid是否有session对象.
 	s, ok := sess.item[cookie.Value]
 	if !ok {
 		s = sess.createSessionId(c)
-		return s,nil
+		return s, nil
 	}
 
-	return s,nil
+	return s, nil
 }
 
 func (s *session) Get(key string) interface{} {
@@ -99,9 +100,9 @@ func (sm *sessionManager) Destroy(s *session) {
 
 	//删除cookie.
 	http.SetCookie(s.response, &http.Cookie{
-		Name: SESSION_NAME,
-		MaxAge: -1,
-		Expires: time.Now().Add(-100 * time.Hour),// Set expires for older versions of IE
-		Path: "/",
+		Name:    SESSION_NAME,
+		MaxAge:  -1,
+		Expires: time.Now().Add(-100 * time.Hour), // Set expires for older versions of IE
+		Path:    "/",
 	})
 }

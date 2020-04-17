@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 )
 
-func (srv *Handler) Static(path string, dir string)  {
+func (srv *Handler) Static(path string, dir string) {
 	srv.createFileServer(path, dir)
 }
 
-func(srv *Handler) createFileServer(fpath string, dir string) {
+func (srv *Handler) createFileServer(fpath string, dir string) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			srv.fsRouter[fpath+info.Name()] = path
