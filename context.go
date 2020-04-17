@@ -14,6 +14,7 @@ type Context struct {
 	UserAgent string
 	Url       string
 	Body      io.ReadCloser
+	Header    http.Header
 }
 
 func (c *Context) String(msg string) {
