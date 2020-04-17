@@ -6,10 +6,15 @@ import (
 )
 
 func (srv *Handler) Static(path string, dir string) {
-	srv.createFileServer(path, dir)
+	//判断dir路径是否存在.
+	_, err := os.Stat(dir)
+	if err != nil {
+		panic(err)
+	}
+	srv.fsHandle(path, dir)
 }
 
-func (srv *Handler) createFileServer(fpath string, dir string) {
+func (srv *Handler) fsHandle(fpath string, dir string) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			srv.fsRouter[fpath+info.Name()] = path
@@ -21,23 +26,23 @@ func (srv *Handler) createFileServer(fpath string, dir string) {
 	}
 }
 
-func (srv *Handler) GET(path string, handler hFunc) {
+func (srv *Handler) GET(path string, handler beerFunc) {
 	srv.handle("GET", path, handler)
 }
 
-func (srv *Handler) POST(path string, handler hFunc) {
+func (srv *Handler) POST(path string, handler beerFunc) {
 	srv.handle("POST", path, handler)
 }
 
-func (srv *Handler) DELETE(path string, handler hFunc) {
+func (srv *Handler) DELETE(path string, handler beerFunc) {
 	srv.handle("DELETE", path, handler)
 }
 
-func (srv *Handler) PUT(path string, handler hFunc) {
+func (srv *Handler) PUT(path string, handler beerFunc) {
 	srv.handle("PUT", path, handler)
 }
 
-func (srv *Handler) handle(method string, path string, handler hFunc) {
+func (srv *Handler) handle(method string, path string, handler beerFunc) {
 	h := beerHandler{
 		Method: method,
 		Path:   path,
