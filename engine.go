@@ -79,6 +79,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					Url:       r.URL.String(),
 					Body:      r.Body,
 					Header:    r.Header,
+					templateDir:srv.templateDir,
 				}
 				handler(ctx)
 				return
@@ -105,6 +106,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Url:       r.URL.String(),
 		Body:      r.Body,
 		Header:    r.Header,
+		templateDir:srv.templateDir,
 	}
 	handler(ctx)
 }

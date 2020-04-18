@@ -12,6 +12,7 @@ type Engine interface {
 	PUT(path string, handler beerFunc)
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 	Static(path string, dir string)
+	SetTemplateDir(dir string)
 }
 
 type beerFunc func(*Context)
@@ -24,6 +25,7 @@ type beerHandler struct {
 type Handler struct {
 	router   map[beerHandler]beerFunc
 	fsRouter map[string]string
+	templateDir	string
 }
 
 func New() Engine {

@@ -9,3 +9,8 @@ func parstInt(s string) int {
 	}
 	return n
 }
+
+//dir .
+func dir(dir string) string {
+	return dir
+}
