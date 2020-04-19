@@ -9,8 +9,7 @@ Beer是一个使用golang开发的轻量级web框架，目的是希望使用这�
 package main
 
 import (
-	"beer"
-	"fmt"
+	"github.com/houzhongjian/beer"
 	"log"
 )
 
@@ -23,46 +22,43 @@ func main() {
 	beer.Loadini("./public/conf/app.ini")
 
 	srv.GET("/", Default)
-	srv.GET("/detail", Detail)
-	srv.GET("/login/:userid/:name/:age", Login)
-	srv.GET("/rem", Rem)
+	srv.GET("/detail/:id", Detail)
+	srv.POST("/login", Login)
 	if err := srv.Run(":8088"); err != nil {
 		panic(err)
 	}
 }
 
-func Rem(c *beer.Context)  {
-	sess, _ := beer.Session().Start(c)
-	beer.Session().Destroy(sess)
-}
-
 func Default(c *beer.Context) {
-	name := beer.Config().GetString("app_name")
-	c.String(name)
+	log.Println(c.IP)
+	c.Layout = "blog/layout.html"
+	c.Data["name"] = "张三"
+	c.Data["age"] = 20
+	c.Data["title"] = "goBeer"
+	c.Html("blog/index.html")
 }
 
 func Login(c *beer.Context) {
-	session, err := beer.Session().Start(c)
+    session,err := beer.Session().Start(c)
 	if err != nil {
 		log.Printf("err:%+v\n",err)
 		return
 	}
-	session.Set("userid",c.Get("userid"))
-	session.Set("name",c.Get("name"))
-	session.Set("age",c.Get("age"))
+	session.Set("name","张三")
+
+	c.Data["code"] = 1000
+	c.Data["msg"] = "登录成功"
+	c.Json()
 }
+
 func Detail(c *beer.Context) {
-	session, err := beer.Session().Start(c)
-	if err != nil {
-		log.Printf("err:%+v\n",err)
-		return
-	}
-	uid := session.Get("userid").(string)
-	name := session.Get("name").(string)
-	age := session.Get("age").(string)
+	log.Println(c.Param("id"))
+	log.Println(c.UserAgent)
 
-	msg := fmt.Sprintf("uid = %s, name = %s, age = %s", uid, name, age)
-	c.String(msg)
-
+	c.Layout = "blog/layout.html"
+	c.Data["name"] = "zhangsan"
+	c.Data["age"] = 20
+	c.Data["title"] = "博客标题"
+	c.Html("blog/detail.html")
 }
 ```

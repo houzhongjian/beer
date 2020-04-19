@@ -85,4 +85,3 @@ func (c *Context) Json() {
 func (c *Context) MiddlewareReturn() {
 	c.step -= 1
 }
-

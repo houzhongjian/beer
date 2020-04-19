@@ -19,7 +19,7 @@ func Default(c *beer.Context) {
 	}
 
 	session.Set("name","张三")
-	c.Layout = "blog/layer.html"
+	c.Layout = "blog/layout.html"
 	c.Data["name"] = "张三"
 	c.Data["age"] = 20
 	c.Data["title"] = "goBeer"
@@ -27,19 +27,19 @@ func Default(c *beer.Context) {
 }
 
 func Login(c *beer.Context) {
+	c.Data["code"] = 1000
+	c.Data["msg"] = "登录成功"
+	c.Json()
+}
+
+func Detail(c *beer.Context) {
 	log.Println(c.Param("id"))
 	log.Println(c.Param("name"))
 	log.Println(c.UserAgent)
 
-	c.Layout = "blog/layer.html"
+	c.Layout = "blog/layout.html"
 	c.Data["name"] = "zhangsan"
 	c.Data["age"] = 20
 	c.Data["title"] = "欢迎回来"
-	c.Html("admin/login.html")
-}
-
-func Detail(c *beer.Context) {
-	c.Data["code"] = 1000
-	c.Data["msg"] = "登录成功"
-	c.Json()
+	c.Html("blog/detail.html")
 }
