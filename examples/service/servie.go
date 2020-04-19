@@ -12,19 +12,21 @@ func Rem(c *beer.Context)  {
 
 func Default(c *beer.Context) {
 	log.Println(c.IP)
-	//session,err := beer.Session().Start(c)
-	//if err != nil {
-	//	log.Printf("err:%+v\n",err)
-	//	return
-	//}
-	//
-	//session.Set("name","张三")
 	c.Layout = "blog/layout.html"
 	c.Data["title"] = "goBeer"
 	c.Html("blog/index.html")
 }
 
 func Login(c *beer.Context) {
+	sess, err := beer.Session().Start(c)
+	if err != nil {
+		log.Printf("err:%+v\n",err)
+		c.Data["code"] = 1001
+		c.Data["msg"] = "登录失败"
+		c.Json()
+		return
+	}
+	sess.Set("name","张三")
 	c.Data["code"] = 1000
 	c.Data["msg"] = "登录成功"
 	c.Json()
