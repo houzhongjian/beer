@@ -37,10 +37,9 @@ func Login(c *beer.Context) {
 }
 
 func Detail(c *beer.Context) {
-	//c.String("hello beer")
 	obj := map[string]interface{}{
 		"code":1000,
 		"msg":"登录成功",
 	}
-	c.ReturnJson(obj)
+	c.Json(obj)
 }

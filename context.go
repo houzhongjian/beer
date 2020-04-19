@@ -68,13 +68,13 @@ func (c *Context) Html(htmlPath string, data interface{}) {
 	_ = t.Execute(c.Response, data)
 }
 
-//ReturnJson.
-func (c *Context) ReturnJson(data map[string]interface{}) {
+//Json.
+func (c *Context) Json(data map[string]interface{}) {
 	b, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("err:%+v\n",err)
 		return
 	}
-	c.Header.Set("Content-Type","application/json")
+	c.Response.Header().Set("Content-Type","application/json")
 	c.String(string(b))
 }
