@@ -76,5 +76,5 @@ func (c *Context) Json(data map[string]interface{}) {
 		return
 	}
 	c.Response.Header().Set("Content-Type","application/json")
-	c.String(string(b))
+	c.Response.Write(b)
 }
