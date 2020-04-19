@@ -14,17 +14,17 @@ import (
 )
 
 func main() {
-	srv := beer.New()
-
-	srv.Static("/img/", "./public/image")
-	srv.Static("/conf/", "./public/conf/")
-
+    //加载配置文件.
 	beer.Loadini("./public/conf/app.ini")
+	r := beer.New()
 
-	srv.GET("/", Default)
-	srv.GET("/detail/:id", Detail)
-	srv.POST("/login", Login)
-	if err := srv.Run(":8088"); err != nil {
+	r.Static("/img/", "./public/image")
+	r.Static("/conf/", "./public/conf/")
+	r.GET("/", Default)
+	r.GET("/detail/:id", Detail)
+	r.POST("/login", Login)
+
+	if err := r.Run(":8088"); err != nil {
 		panic(err)
 	}
 }
