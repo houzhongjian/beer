@@ -26,6 +26,7 @@ type Context struct {
 	Layout      string
 	IP          string
 	step        int
+	Data        map[string]interface{}
 }
 
 func (c *Context) String(msg string) {
@@ -41,7 +42,7 @@ func (c *Context) Param(key string) string {
 	return v
 }
 
-func (c *Context) Html(htmlPath string, data interface{}) {
+func (c *Context) Html(htmlPath string) {
 	htmlPath = fmt.Sprintf("%s%s", c.templateDir, htmlPath)
 	b, err := ioutil.ReadFile(htmlPath)
 	if err != nil {
@@ -66,12 +67,12 @@ func (c *Context) Html(htmlPath string, data interface{}) {
 		log.Printf("err:%+v\n", err)
 		return
 	}
-	_ = t.Execute(c.Response, data)
+	_ = t.Execute(c.Response, c.Data)
 }
 
 //Json.
-func (c *Context) Json(data map[string]interface{}) {
-	b, err := json.Marshal(data)
+func (c *Context) Json() {
+	b, err := json.Marshal(c.Data)
 	if err != nil {
 		log.Printf("err:%+v\n", err)
 		return
@@ -84,3 +85,4 @@ func (c *Context) Json(data map[string]interface{}) {
 func (c *Context) MiddlewareReturn() {
 	c.step -= 1
 }
+

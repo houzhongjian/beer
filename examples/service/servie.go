@@ -20,12 +20,10 @@ func Default(c *beer.Context) {
 
 	session.Set("name","张三")
 	c.Layout = "blog/layer.html"
-	data := map[string]interface{}{
-		"name":"张三",
-		"age":20,
-		"title":"goBeer",
-	}
-	c.Html("blog/index.html", data)
+	c.Data["name"] = "张三"
+	c.Data["age"] = 20
+	c.Data["title"] = "goBeer"
+	c.Html("blog/index.html")
 }
 
 func Login(c *beer.Context) {
@@ -33,20 +31,15 @@ func Login(c *beer.Context) {
 	log.Println(c.Param("name"))
 	log.Println(c.UserAgent)
 
-	//c.Layout = "blog/layer.html"
-	data := map[string]interface{}{
-		"title":"欢迎回来",
-		"name":"zhangsan",
-		"age":20,
-	}
-	c.Html("admin/login.html", data)
+	c.Layout = "blog/layer.html"
+	c.Data["name"] = "zhangsan"
+	c.Data["age"] = 20
+	c.Data["title"] = "欢迎回来"
+	c.Html("admin/login.html")
 }
 
 func Detail(c *beer.Context) {
-	obj := map[string]interface{}{
-		"code":1000,
-		"msg":"登录成功",
-	}
-	log.Println(obj)
-	c.Json(obj)
+	c.Data["code"] = 1000
+	c.Data["msg"] = "登录成功"
+	c.Json()
 }
