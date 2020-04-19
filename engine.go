@@ -33,7 +33,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	handler, ok := srv.router[h]
 	if ok {
-		srv.beerFunc(w, r, srv.parseParams(r),handler)
+		srv.beerFunc(w, r, srv.parseParams(r), handler)
 		return
 	}
 
@@ -113,8 +113,8 @@ func (srv *Handler) mergeMap(mp1, mp2 map[string]string) map[string]string {
 	return mp
 }
 
-func(srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[string]string, handler beerFunc) {
-	remoteAddr := strings.Split(r.RemoteAddr,":")
+func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[string]string, handler beerFunc) {
+	remoteAddr := strings.Split(r.RemoteAddr, ":")
 	ctx := &Context{
 		Method:      r.Method,
 		Request:     r,
@@ -126,6 +126,15 @@ func(srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[s
 		Header:      r.Header,
 		templateDir: srv.templateDir,
 		IP:          remoteAddr[0],
+		step: 1,	//步长默认为1.
+	}
+
+	//执行中间件.
+	for _, middleware := range srv.middleware {
+		middleware(ctx)
+		if ctx.step < 1 {
+			return
+		}
 	}
 	handler(ctx)
 }

@@ -25,6 +25,7 @@ type Context struct {
 	templateDir string
 	Layout      string
 	IP          string
+	step       int
 }
 
 func (c *Context) String(msg string) {
@@ -56,7 +57,7 @@ func (c *Context) Html(htmlPath string, data interface{}) {
 			log.Printf("err:%+v\n", err)
 			return
 		}
-		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}`, string(b))
+		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}{{template "LayoutContent" .}}`, string(b))
 		tmpl = strings.Replace(string(layerByte), `{{template "LayoutContent" .}}`, tmpl, -1)
 	}
 	t := template.New(htmlPath)
@@ -72,9 +73,14 @@ func (c *Context) Html(htmlPath string, data interface{}) {
 func (c *Context) Json(data map[string]interface{}) {
 	b, err := json.Marshal(data)
 	if err != nil {
-		log.Printf("err:%+v\n",err)
+		log.Printf("err:%+v\n", err)
 		return
 	}
-	c.Response.Header().Set("Content-Type","application/json")
+	c.Response.Header().Set("Content-Type", "application/json")
 	_, _ = c.Response.Write(b)
+}
+
+//MiddlewareReturn 直接中断当前中间件执行流程.
+func (c *Context) MiddlewareReturn() {
+	c.step-=1
 }

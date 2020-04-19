@@ -13,6 +13,7 @@ type Engine interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 	Static(path string, dir string)
 	SetTemplateDir(dir string)
+	Use(middleware ...beerFunc)
 }
 
 type beerFunc func(*Context)
@@ -26,6 +27,7 @@ type Handler struct {
 	router      map[beerHandler]beerFunc
 	fsRouter    map[string]string
 	templateDir string
+	middleware  []beerFunc
 }
 
 func New() Engine {

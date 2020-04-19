@@ -1,6 +1,7 @@
 package router
 
 import (
+	"beer_dmeo/filter"
 	"beer_dmeo/service"
 	"github.com/houzhongjian/beer"
 	"log"
@@ -13,6 +14,7 @@ func Init() beer.Engine {
 	beer.Loadini("./public/conf/app.ini")
 	srv := beer.New()
 
+	srv.Use(filter.FilterLogin)
 	srv.Static("/img/", "./public/image")
 	srv.Static("/conf/", "./public/conf/")
 	srv.Static("/css/", "./public/css/")

@@ -33,7 +33,13 @@ func Login(c *beer.Context) {
 	log.Println(c.Param("name"))
 	log.Println(c.UserAgent)
 
-	c.Html("./views/admin/login.html",nil)
+	//c.Layout = "blog/layer.html"
+	data := map[string]interface{}{
+		"title":"欢迎回来",
+		"name":"zhangsan",
+		"age":20,
+	}
+	c.Html("admin/login.html", data)
 }
 
 func Detail(c *beer.Context) {
@@ -41,5 +47,6 @@ func Detail(c *beer.Context) {
 		"code":1000,
 		"msg":"登录成功",
 	}
+	log.Println(obj)
 	c.Json(obj)
 }
