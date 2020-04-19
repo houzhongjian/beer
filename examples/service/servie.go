@@ -12,16 +12,14 @@ func Rem(c *beer.Context)  {
 
 func Default(c *beer.Context) {
 	log.Println(c.IP)
-	session,err := beer.Session().Start(c)
-	if err != nil {
-		log.Printf("err:%+v\n",err)
-		return
-	}
-
-	session.Set("name","张三")
+	//session,err := beer.Session().Start(c)
+	//if err != nil {
+	//	log.Printf("err:%+v\n",err)
+	//	return
+	//}
+	//
+	//session.Set("name","张三")
 	c.Layout = "blog/layout.html"
-	c.Data["name"] = "张三"
-	c.Data["age"] = 20
 	c.Data["title"] = "goBeer"
 	c.Html("blog/index.html")
 }
@@ -38,8 +36,7 @@ func Detail(c *beer.Context) {
 	log.Println(c.UserAgent)
 
 	c.Layout = "blog/layout.html"
-	c.Data["name"] = "zhangsan"
-	c.Data["age"] = 20
 	c.Data["title"] = "欢迎回来"
+	log.Println("userid:",c.Data["userid"])
 	c.Html("blog/detail.html")
 }

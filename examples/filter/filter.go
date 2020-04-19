@@ -15,5 +15,8 @@ func FilterLogin(c *beer.Context) {
 		c.MiddlewareReturn()
 		return
 	}
+	c.Data["userid"] = 34567
+	c.Data["name"] = "张三"
+	c.Data["age"] = 20
 	log.Println("FilterLogin")
 }
