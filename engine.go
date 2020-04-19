@@ -26,6 +26,17 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//固定路由优先.
+	h := beerHandler{
+		Method: r.Method,
+		Path:   path,
+	}
+	handler, ok := srv.router[h]
+	if ok {
+		srv.beerFunc(w, r, srv.parseParams(r),handler)
+		return
+	}
+
 	paramsMp := map[string]string{}
 	for router, handler := range srv.router {
 		//判断当前的路由.
@@ -70,45 +81,13 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				params := srv.mergeMap(srv.parseParams(r), paramsMp)
-				ctx := &Context{
-					Method:    r.Method,
-					Request:   r,
-					Response:  w,
-					params:    params,
-					UserAgent: r.UserAgent(),
-					Url:       r.URL.String(),
-					Body:      r.Body,
-					Header:    r.Header,
-					templateDir:srv.templateDir,
-				}
-				handler(ctx)
+				srv.beerFunc(w, r, params, handler)
 				return
 			}
 		}
 	}
 
-	h := beerHandler{
-		Method: r.Method,
-		Path:   path,
-	}
-	handler, ok := srv.router[h]
-	if !ok {
-		_, _ = w.Write([]byte("not found"))
-		return
-	}
-
-	ctx := &Context{
-		Method:    r.Method,
-		Request:   r,
-		Response:  w,
-		params:    srv.parseParams(r),
-		UserAgent: r.UserAgent(),
-		Url:       r.URL.String(),
-		Body:      r.Body,
-		Header:    r.Header,
-		templateDir:srv.templateDir,
-	}
-	handler(ctx)
+	_, _ = w.Write([]byte("not found"))
 }
 
 //parseParams 解析http请求中的参数.
@@ -132,4 +111,21 @@ func (srv *Handler) mergeMap(mp1, mp2 map[string]string) map[string]string {
 		mp[k] = v
 	}
 	return mp
+}
+
+func(srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[string]string, handler beerFunc) {
+	remoteAddr := strings.Split(r.RemoteAddr,":")
+	ctx := &Context{
+		Method:      r.Method,
+		Request:     r,
+		Response:    w,
+		params:      params,
+		UserAgent:   r.UserAgent(),
+		Url:         r.URL.String(),
+		Body:        r.Body,
+		Header:      r.Header,
+		templateDir: srv.templateDir,
+		IP:          remoteAddr[0],
+	}
+	handler(ctx)
 }

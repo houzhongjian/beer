@@ -23,9 +23,9 @@ type beerHandler struct {
 }
 
 type Handler struct {
-	router   map[beerHandler]beerFunc
-	fsRouter map[string]string
-	templateDir	string
+	router      map[beerHandler]beerFunc
+	fsRouter    map[string]string
+	templateDir string
 }
 
 func New() Engine {

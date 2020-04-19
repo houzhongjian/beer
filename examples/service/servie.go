@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/houzhongjian/beer"
-	"io/ioutil"
 	"log"
 )
 
@@ -12,6 +11,14 @@ func Rem(c *beer.Context)  {
 }
 
 func Default(c *beer.Context) {
+	log.Println(c.IP)
+	session,err := beer.Session().Start(c)
+	if err != nil {
+		log.Printf("err:%+v\n",err)
+		return
+	}
+
+	session.Set("name","张三")
 	c.Layout = "blog/layer.html"
 	data := map[string]interface{}{
 		"name":"张三",
@@ -30,10 +37,10 @@ func Login(c *beer.Context) {
 }
 
 func Detail(c *beer.Context) {
-	b, err := ioutil.ReadAll(c.Body)
-	if err != nil {
-		log.Printf("err:%+v\n", err)
-		return
+	//c.String("hello beer")
+	obj := map[string]interface{}{
+		"code":1000,
+		"msg":"登录成功",
 	}
-	log.Println(string(b))
+	c.ReturnJson(obj)
 }

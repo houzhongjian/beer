@@ -2,27 +2,29 @@ package beer
 
 import "C"
 import (
+	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"html/template"
 	"strings"
 )
 
 //Context.
 type Context struct {
-	Method    string
-	Request   *http.Request
-	Response  http.ResponseWriter
-	params    map[string]string
-	UserAgent string
-	Url       string
-	Body      io.ReadCloser
-	Header    http.Header
+	Method      string
+	Request     *http.Request
+	Response    http.ResponseWriter
+	params      map[string]string
+	UserAgent   string
+	Url         string
+	Body        io.ReadCloser
+	Header      http.Header
 	templateDir string
-	Layout   string
+	Layout      string
+	IP          string
 }
 
 func (c *Context) String(msg string) {
@@ -39,19 +41,19 @@ func (c *Context) Param(key string) string {
 }
 
 func (c *Context) Html(htmlPath string, data interface{}) {
-	htmlPath = fmt.Sprintf("%s%s",c.templateDir, htmlPath)
+	htmlPath = fmt.Sprintf("%s%s", c.templateDir, htmlPath)
 	b, err := ioutil.ReadFile(htmlPath)
 	if err != nil {
-		log.Printf("err:%+v\n",err)
+		log.Printf("err:%+v\n", err)
 		return
 	}
 	var tmpl string
 	if c.Layout == "" {
 		tmpl = string(b)
 	} else {
-		layerByte, err := ioutil.ReadFile(fmt.Sprintf("%s%s",c.templateDir, c.Layout))
+		layerByte, err := ioutil.ReadFile(fmt.Sprintf("%s%s", c.templateDir, c.Layout))
 		if err != nil {
-			log.Printf("err:%+v\n",err)
+			log.Printf("err:%+v\n", err)
 			return
 		}
 		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}`, string(b))
@@ -60,8 +62,19 @@ func (c *Context) Html(htmlPath string, data interface{}) {
 	t := template.New(htmlPath)
 	t, err = t.Parse(tmpl)
 	if err != nil {
-		log.Printf("err:%+v\n",err)
+		log.Printf("err:%+v\n", err)
 		return
 	}
 	_ = t.Execute(c.Response, data)
+}
+
+//ReturnJson.
+func (c *Context) ReturnJson(data map[string]interface{}) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("err:%+v\n",err)
+		return
+	}
+	c.Header.Set("Content-Type","application/json")
+	c.String(string(b))
 }
