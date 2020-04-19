@@ -51,5 +51,8 @@ func (srv *Handler) handle(method string, path string, handler beerFunc) {
 	if ok {
 		panic("当前url已经存在")
 	}
+
+	//获取当前所以的中间件.
+	srv.middlewareRouter[path] = srv.middleware
 	srv.router[h] = handler
 }

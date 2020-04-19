@@ -24,15 +24,17 @@ type beerHandler struct {
 }
 
 type Handler struct {
-	router      map[beerHandler]beerFunc
-	fsRouter    map[string]string
-	templateDir string
-	middleware  []beerFunc
+	router           map[beerHandler]beerFunc
+	fsRouter         map[string]string
+	templateDir      string
+	middleware       []beerFunc
+	middlewareRouter map[string][]beerFunc
 }
 
 func New() Engine {
 	e := new(Handler)
 	e.router = make(map[beerHandler]beerFunc)
 	e.fsRouter = make(map[string]string)
+	e.middlewareRouter = make(map[string][]beerFunc)
 	return e
 }

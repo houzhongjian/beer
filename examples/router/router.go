@@ -13,8 +13,8 @@ func init (){
 func Init() beer.Engine {
 	beer.Loadini("./public/conf/app.ini")
 	srv := beer.New()
+	srv.Use(filter.Log)
 
-	srv.Use(filter.FilterLogin)
 	srv.Static("/img/", "./public/image")
 	srv.Static("/conf/", "./public/conf/")
 	srv.Static("/css/", "./public/css/")
@@ -22,9 +22,12 @@ func Init() beer.Engine {
 
 	srv.SetTemplateDir("./views/")
 
+	srv.GET("/login", service.Login)
+
+	srv.Use(filter.FilterLogin)
+
 	srv.GET("/", service.Default)
 	srv.GET("/detail/:id", service.Detail)
-	srv.GET("/login", service.Login)
 	srv.GET("/rem", service.Rem)
 	return srv
 }

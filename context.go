@@ -25,7 +25,7 @@ type Context struct {
 	templateDir string
 	Layout      string
 	IP          string
-	step       int
+	step        int
 }
 
 func (c *Context) String(msg string) {
@@ -82,5 +82,5 @@ func (c *Context) Json(data map[string]interface{}) {
 
 //MiddlewareReturn 直接中断当前中间件执行流程.
 func (c *Context) MiddlewareReturn() {
-	c.step-=1
+	c.step -= 1
 }
