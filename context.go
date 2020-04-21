@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -23,6 +22,7 @@ type Context struct {
 	Body        io.ReadCloser
 	Header      http.Header
 	templateDir string
+	templateData map[string]string
 	Layout      string
 	IP          string
 	step        int
@@ -43,30 +43,28 @@ func (c *Context) Param(key string) string {
 }
 
 func (c *Context) Html(htmlPath string) {
-	htmlPath = fmt.Sprintf("%s%s", c.templateDir, htmlPath)
-	b, err := ioutil.ReadFile(htmlPath)
-	if err != nil {
-		log.Printf("err:%+v\n", err)
+	tmpl, ok := c.templateData[htmlPath]
+	if !ok {
+		log.Printf("当前视图文件不存在:", htmlPath)
 		return
 	}
-	var tmpl string
-	if c.Layout == "" {
-		tmpl = string(b)
-	} else {
-		layerByte, err := ioutil.ReadFile(fmt.Sprintf("%s%s", c.templateDir, c.Layout))
-		if err != nil {
-			log.Printf("err:%+v\n", err)
+
+	if c.Layout != "" {
+		layoutContent, ok := c.templateData[c.Layout]
+		if !ok {
+			log.Printf("当前视图文件不存在:", c.Layout)
 			return
 		}
-		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}{{template "LayoutContent" .}}`, string(b))
-		tmpl = strings.Replace(string(layerByte), `{{template "LayoutContent" .}}`, tmpl, -1)
+		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}{{template "LayoutContent" .}}`, tmpl)
+		tmpl = strings.Replace(layoutContent, `{{template "LayoutContent" .}}`, tmpl, -1)
 	}
 	t := template.New(htmlPath)
-	t, err = t.Parse(tmpl)
+	t, err := t.Parse(tmpl)
 	if err != nil {
 		log.Printf("err:%+v\n", err)
 		return
 	}
+	c.Response.Header().Set("Content-Type","text/html;charset=utf-8")
 	_ = t.Execute(c.Response, c.Data)
 }
 

@@ -27,6 +27,7 @@ type Handler struct {
 	router           map[beerHandler]beerFunc
 	fsRouter         map[string]string
 	templateDir      string
+	templateData      map[string]string
 	middleware       []beerFunc
 	middlewareRouter map[string][]beerFunc
 }
@@ -36,5 +37,6 @@ func New() Engine {
 	e.router = make(map[beerHandler]beerFunc)
 	e.fsRouter = make(map[string]string)
 	e.middlewareRouter = make(map[string][]beerFunc)
+	e.templateData = make(map[string]string)
 	return e
 }
