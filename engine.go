@@ -126,11 +126,9 @@ func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[
 		Url:         r.URL.String(),
 		Body:        r.Body,
 		Header:      r.Header,
-		templateDir: srv.templateDir,
 		IP:          remoteAddr[0],
 		step:        1, //步长默认为1.
 		Data:        make(map[string]interface{}),
-		templateData: srv.templateData,
 	}
 
 	//执行中间件.

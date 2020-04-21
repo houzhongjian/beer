@@ -37,7 +37,7 @@ func Detail(c *beer.Context) {
 	log.Println(c.Param("name"))
 	log.Println(c.UserAgent)
 
-	c.Layout = "blog/layout.html"
+	//c.Layout = "blog/layout.html"
 	c.Data["title"] = "欢迎回来"
 	log.Println("userid:",c.Data["userid"])
 	c.Html("blog/detail.html")

@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var templateData = make(map[string]string)
+
 //SetTemplateDir 设置视图文件夹路径.
 func (srv *Handler) SetTemplateDir(templateDir string) {
 	_, err := os.Stat(templateDir)
@@ -25,7 +27,7 @@ func (srv *Handler) SetTemplateDir(templateDir string) {
 			}
 			//替换名称.
 			path = strings.Replace(path, templateDir,"",-1)
-			srv.templateData[path] = string(b)
+			templateData[path] = string(b)
 		}
 		return nil
 	})

@@ -21,12 +21,10 @@ type Context struct {
 	Url         string
 	Body        io.ReadCloser
 	Header      http.Header
-	templateDir string
-	templateData map[string]string
 	Layout      string
 	IP          string
-	step        int
-	Data        map[string]interface{}
+	step        int	//步长.
+	Data        map[string]interface{}	//视图渲染的数据.
 }
 
 func (c *Context) String(msg string) {
@@ -43,14 +41,14 @@ func (c *Context) Param(key string) string {
 }
 
 func (c *Context) Html(htmlPath string) {
-	tmpl, ok := c.templateData[htmlPath]
+	tmpl, ok := templateData[htmlPath]
 	if !ok {
 		log.Printf("当前视图文件不存在:", htmlPath)
 		return
 	}
 
 	if c.Layout != "" {
-		layoutContent, ok := c.templateData[c.Layout]
+		layoutContent, ok := templateData[c.Layout]
 		if !ok {
 			log.Printf("当前视图文件不存在:", c.Layout)
 			return
