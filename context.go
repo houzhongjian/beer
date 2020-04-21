@@ -43,14 +43,14 @@ func (c *Context) Param(key string) string {
 func (c *Context) Html(htmlPath string) {
 	tmpl, ok := templateData[htmlPath]
 	if !ok {
-		log.Printf("当前视图文件不存在:", htmlPath)
+		log.Println("当前视图文件不存在:", htmlPath)
 		return
 	}
 
 	if c.Layout != "" {
 		layoutContent, ok := templateData[c.Layout]
 		if !ok {
-			log.Printf("当前视图文件不存在:", c.Layout)
+			log.Println("当前视图文件不存在:", c.Layout)
 			return
 		}
 		tmpl = fmt.Sprintf(`{{define  "LayoutContent"}}%s{{end}}{{template "LayoutContent" .}}`, tmpl)
