@@ -18,6 +18,8 @@ func Default(c *beer.Context) {
 }
 
 func Login(c *beer.Context) {
+	//c.Request.C
+
 	sess, err := beer.Session().Start(c)
 	if err != nil {
 		log.Printf("err:%+v\n",err)

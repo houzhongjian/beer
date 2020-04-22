@@ -1,6 +1,5 @@
 package beer
 
-import "C"
 import (
 	"encoding/json"
 	"fmt"

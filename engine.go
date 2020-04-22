@@ -89,6 +89,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	w.WriteHeader(http.StatusNotFound)
 	_, _ = w.Write([]byte("not found"))
 }
 
