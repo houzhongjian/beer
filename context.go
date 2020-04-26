@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -18,7 +17,6 @@ type Context struct {
 	params      map[string]string
 	UserAgent   string
 	Url         string
-	Body        io.ReadCloser
 	Header      http.Header
 	Layout      string
 	IP          string
@@ -31,9 +29,21 @@ func (c *Context) String(msg string) {
 }
 
 //Param.
+//Param 获取参数优先级为:
+//路由参数>GET参数>POST参数.
 func (c *Context) Param(key string) string {
 	v, ok := c.params[key]
 	if !ok {
+		val := c.Request.FormValue(key)
+		if val != "" {
+			return val
+		}
+
+		val = c.Request.PostFormValue(key)
+		if val != "" {
+			return val
+		}
+
 		return ""
 	}
 	return v

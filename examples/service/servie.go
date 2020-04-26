@@ -17,9 +17,20 @@ func Default(c *beer.Context) {
 	c.Html("blog/index.html")
 }
 
+type User struct {
+	Account string `json:"account"`
+	Password string	`json:"password"`
+}
 func Login(c *beer.Context) {
-	//c.Request.C
-
+	if c.Method == "POST" {
+		user := User{}
+		if err := c.BindJSON(&user); err != nil {
+			log.Printf("err:%+v\n",err)
+			return
+		}
+		log.Printf("user:%+v\n", user)
+		return
+	}
 	sess, err := beer.Session().Start(c)
 	if err != nil {
 		log.Printf("err:%+v\n",err)

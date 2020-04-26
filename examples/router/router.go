@@ -23,6 +23,7 @@ func Init() beer.Engine {
 	srv.SetTemplateDir("./views/")
 
 	srv.GET("/login", service.Login)
+	srv.POST("/login", service.Login)
 
 	srv.Use(filter.FilterLogin)
 	srv.GET("/", service.Default)

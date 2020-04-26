@@ -34,7 +34,7 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler, ok := srv.router[h]
 	if ok {
 		middleware := srv.middlewareRouter[path]
-		srv.beerFunc(w, r, srv.parseParams(r), handler, middleware)
+		srv.beerFunc(w, r, nil, handler, middleware)
 		return
 	}
 
@@ -81,9 +81,9 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					_, _ = w.Write([]byte("not found"))
 					return
 				}
-				params := srv.mergeMap(srv.parseParams(r), paramsMp)
+				//params := srv.mergeMap(srv.parseParams(r), paramsMp)
 				middleware := srv.middlewareRouter[router.Path]
-				srv.beerFunc(w, r, params, handler, middleware)
+				srv.beerFunc(w, r, paramsMp, handler, middleware)
 				return
 			}
 		}
@@ -125,7 +125,6 @@ func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[
 		params:      params,
 		UserAgent:   r.UserAgent(),
 		Url:         r.URL.String(),
-		Body:        r.Body,
 		Header:      r.Header,
 		IP:          remoteAddr[0],
 		step:        1, //步长默认为1.
