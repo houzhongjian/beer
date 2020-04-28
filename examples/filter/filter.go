@@ -2,7 +2,7 @@ package filter
 
 import (
 	"github.com/houzhongjian/beer"
-	"log"
+	"github.com/houzhongjian/beer/log"
 )
 
 func FilterLogin(c *beer.Context) {

@@ -27,7 +27,7 @@ type Handler struct {
 	router           map[beerHandler]beerFunc
 	fsRouter         map[string]string
 	templateDir      string
-	templateData      map[string]string
+	templateData     map[string]string
 	middleware       []beerFunc
 	middlewareRouter map[string][]beerFunc
 }

@@ -16,17 +16,17 @@ func (srv *Handler) SetTemplateDir(templateDir string) {
 	if err != nil {
 		panic(err)
 	}
-	templateDir = strings.Replace(templateDir,"./","",-1)
+	templateDir = strings.Replace(templateDir, "./", "", -1)
 	err = filepath.Walk(templateDir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			//读取视图.
 			b, err := ioutil.ReadFile(path)
 			if err != nil {
-				log.Printf("err:%+v\n",err)
+				log.Printf("err:%+v\n", err)
 				return err
 			}
 			//替换名称.
-			path = strings.Replace(path, templateDir,"",-1)
+			path = strings.Replace(path, templateDir, "", -1)
 			templateData[path] = string(b)
 		}
 		return nil

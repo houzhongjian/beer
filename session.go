@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	sessi "github.com/houzhongjian/beer/session"
 )
 
 const SESSION_NAME = "BEER_SESSION"
@@ -20,7 +21,7 @@ var sess *sessionManager
 
 type session struct {
 	id       string
-	data     map[string]interface{}
+	data     sessi.Session
 	response http.ResponseWriter
 	request  *http.Request
 }
@@ -37,6 +38,11 @@ func Session() *sessionManager {
 	return sess
 }
 
+func (s *sessionManager) Options(opt *sessi.Options) {
+	opt.InitRedisDrive()
+	sessi.SessionsOptions = opt
+}
+
 func (*sessionManager) createSessionId(c *Context) *session {
 	id := uuid.New().String()
 	id = strings.Replace(id, "-", "", -1)
@@ -48,9 +54,22 @@ func (*sessionManager) createSessionId(c *Context) *session {
 	})
 	s := &session{
 		id:       id,
-		data:     make(map[string]interface{}),
 		request:  c.Request,
 		response: c.Response,
+	}
+
+	if sessi.SessionsOptions == nil {
+		sessi.SessionsOptions = &sessi.Options{
+			Drive:    sessi.MemoryDrive,
+		}
+	}
+
+	if sessi.SessionsOptions.Drive == sessi.RedisDrive {
+		s.data = new(sessi.RedisSession)
+	} else {
+		ram := new(sessi.RamSession)
+		ram.Data = make(map[string]string)
+		s.data = ram
 	}
 	sess.item[id] = s
 	return s
@@ -81,16 +100,12 @@ func (sess *sessionManager) Start(c *Context) (s *session, err error) {
 	return s, nil
 }
 
-func (s *session) Get(key string) interface{} {
-	v, ok := s.data[key]
-	if !ok {
-		return nil
-	}
-	return v
+func (s *session) Get(key string) string {
+	return s.data.Get(key)
 }
 
-func (s *session) Set(key string, val interface{}) {
-	s.data[key] = val
+func (s *session) Set(key string, val string) {
+	s.data.Set(key, val)
 }
 
 func (sm *sessionManager) Destroy(s *session) {

@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/houzhongjian/beer"
-	"log"
+	"github.com/houzhongjian/beer/log"
 )
 
 func Rem(c *beer.Context)  {
@@ -25,21 +25,22 @@ func Login(c *beer.Context) {
 	if c.Method == "POST" {
 		user := User{}
 		if err := c.BindJSON(&user); err != nil {
-			log.Printf("err:%+v\n",err)
+			log.Debug(err)
 			return
 		}
-		log.Printf("user:%+v\n", user)
+		log.Debug(user)
 		return
 	}
 	sess, err := beer.Session().Start(c)
 	if err != nil {
-		log.Printf("err:%+v\n",err)
+		log.Debug(err)
 		c.Data["code"] = 1001
 		c.Data["msg"] = "登录失败"
 		c.Json()
 		return
 	}
 	sess.Set("name","张三")
+	//log.Debug(sess.Get("name"))
 	c.Data["code"] = 1000
 	c.Data["msg"] = "登录成功"
 	c.Json()
@@ -50,8 +51,12 @@ func Detail(c *beer.Context) {
 	log.Println(c.Param("name"))
 	log.Println(c.UserAgent)
 
-	//c.Layout = "blog/layout.html"
-	c.Data["title"] = "欢迎回来"
-	log.Println("userid:",c.Data["userid"])
+	c.Layout = "blog/layout.html"
+	sess,err := beer.Session().Start(c)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	c.Data["title"] = sess.Get("name")
 	c.Html("blog/detail.html")
 }

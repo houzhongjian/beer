@@ -20,7 +20,6 @@ func (c *Context) BindJSON(obj interface{}) error {
 	return nil
 }
 
-
 func decodeJSON(body []byte, obj interface{}) error {
 	decoder := json.NewDecoder(bytes.NewReader(body))
 	if err := decoder.Decode(obj); err != nil {

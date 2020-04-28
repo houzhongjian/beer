@@ -11,17 +11,17 @@ import (
 
 //Context.
 type Context struct {
-	Method      string
-	Request     *http.Request
-	Response    http.ResponseWriter
-	params      map[string]string
-	UserAgent   string
-	Url         string
-	Header      http.Header
-	Layout      string
-	IP          string
-	step        int	//步长.
-	Data        map[string]interface{}	//视图渲染的数据.
+	Method    string
+	Request   *http.Request
+	Response  http.ResponseWriter
+	params    map[string]string
+	UserAgent string
+	Url       string
+	Header    http.Header
+	Layout    string
+	IP        string
+	step      int                    //步长.
+	Data      map[string]interface{} //视图渲染的数据.
 }
 
 func (c *Context) String(msg string) {
@@ -71,7 +71,7 @@ func (c *Context) Html(htmlPath string) {
 		log.Printf("err:%+v\n", err)
 		return
 	}
-	c.Response.Header().Set("Content-Type","text/html;charset=utf-8")
+	c.Response.Header().Set("Content-Type", "text/html;charset=utf-8")
 	_ = t.Execute(c.Response, c.Data)
 }
 

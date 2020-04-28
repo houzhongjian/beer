@@ -119,16 +119,16 @@ func (srv *Handler) mergeMap(mp1, mp2 map[string]string) map[string]string {
 func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[string]string, handler beerFunc, middleware []beerFunc) {
 	remoteAddr := strings.Split(r.RemoteAddr, ":")
 	ctx := &Context{
-		Method:      r.Method,
-		Request:     r,
-		Response:    w,
-		params:      params,
-		UserAgent:   r.UserAgent(),
-		Url:         r.URL.String(),
-		Header:      r.Header,
-		IP:          remoteAddr[0],
-		step:        1, //步长默认为1.
-		Data:        make(map[string]interface{}),
+		Method:    r.Method,
+		Request:   r,
+		Response:  w,
+		params:    params,
+		UserAgent: r.UserAgent(),
+		Url:       r.URL.String(),
+		Header:    r.Header,
+		IP:        remoteAddr[0],
+		step:      1, //步长默认为1.
+		Data:      make(map[string]interface{}),
 	}
 
 	//执行中间件.
