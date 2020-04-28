@@ -19,10 +19,9 @@ func Init() beer.Engine {
 
 	srv.GET("/login", service.Login)
 	srv.POST("/login", service.Login)
-	srv.GET("/detail/:id", service.Detail)
-
 
 	srv.Use(filter.FilterLogin)
+	srv.GET("/detail/:id", service.Detail)
 	srv.GET("/", service.Default)
 
 	srv.GET("/rem", service.Rem)

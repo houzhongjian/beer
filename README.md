@@ -9,7 +9,7 @@ Beer是一个使用golang开发的轻量级web框架，目的是希望使用这�
 package main
 
 import (
-	"github.com/houzhongjian/beer"
+	beer "github.com/houzhongjian/beer/core"
 	"log"
 )
 

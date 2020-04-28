@@ -7,6 +7,44 @@ import (
 	"strings"
 )
 
+type Engine interface {
+	Run(addr string) error
+	GET(path string, handler beerFunc)
+	POST(path string, handler beerFunc)
+	DELETE(path string, handler beerFunc)
+	PUT(path string, handler beerFunc)
+	ServeHTTP(w http.ResponseWriter, r *http.Request)
+	Static(path string, dir string)
+	SetTemplateDir(dir string)
+	Use(middleware ...beerFunc)
+}
+
+type beerFunc func(*Context)
+
+type beerHandler struct {
+	Method string
+	Path   string
+}
+
+type Handler struct {
+	router           map[beerHandler]beerFunc
+	fsRouter         map[string]string
+	templateDir      string
+	templateData     map[string]string
+	middleware       []beerFunc
+	middlewareRouter map[string][]beerFunc
+}
+
+func New() Engine {
+	e := new(Handler)
+	e.router = make(map[beerHandler]beerFunc)
+	e.fsRouter = make(map[string]string)
+	e.middlewareRouter = make(map[string][]beerFunc)
+	e.templateData = make(map[string]string)
+	return e
+}
+
+
 func (srv *Handler) Run(addr string) error {
 	if len(addr) < 1 {
 		panic("addr 不能为空")
@@ -81,7 +119,6 @@ func (srv *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					_, _ = w.Write([]byte("not found"))
 					return
 				}
-				//params := srv.mergeMap(srv.parseParams(r), paramsMp)
 				middleware := srv.middlewareRouter[router.Path]
 				srv.beerFunc(w, r, paramsMp, handler, middleware)
 				return
@@ -104,18 +141,6 @@ func (srv *Handler) parseParams(r *http.Request) map[string]string {
 	return paramsMp
 }
 
-//mergeMap 合并map.
-func (srv *Handler) mergeMap(mp1, mp2 map[string]string) map[string]string {
-	mp := map[string]string{}
-	for k, v := range mp1 {
-		mp[k] = v
-	}
-	for k, v := range mp2 {
-		mp[k] = v
-	}
-	return mp
-}
-
 func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[string]string, handler beerFunc, middleware []beerFunc) {
 	remoteAddr := strings.Split(r.RemoteAddr, ":")
 	ctx := &Context{
@@ -134,6 +159,7 @@ func (srv *Handler) beerFunc(w http.ResponseWriter, r *http.Request, params map[
 	//执行中间件.
 	for _, midd := range middleware {
 		midd(ctx)
+		log.Println(midd)
 		if ctx.step < 1 {
 			return
 		}

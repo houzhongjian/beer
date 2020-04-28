@@ -2,9 +2,9 @@ package filter
 
 import (
 	"github.com/houzhongjian/beer"
-	"github.com/houzhongjian/beer/log"
+	"log"
 )
 
 func Log(c *beer.Context) {
-	log.Info(c.IP,c.Url,c.UserAgent)
+	log.Println(c.IP,c.Url,c.UserAgent)
 }

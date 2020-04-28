@@ -1,8 +1,7 @@
 package beer
 
 import (
-	"bytes"
-	"encoding/json"
+	"github.com/houzhongjian/beer/bind"
 	"io/ioutil"
 	"net/http"
 )
@@ -13,17 +12,6 @@ func (c *Context) BindJSON(obj interface{}) error {
 		c.Response.WriteHeader(http.StatusBadRequest)
 		return err
 	}
-	if err := decodeJSON(b, obj); err != nil {
-		c.Response.WriteHeader(http.StatusBadRequest)
-		return err
-	}
-	return nil
+	return bind.DecodeJSON(b, obj)
 }
 
-func decodeJSON(body []byte, obj interface{}) error {
-	decoder := json.NewDecoder(bytes.NewReader(body))
-	if err := decoder.Decode(obj); err != nil {
-		return err
-	}
-	return nil
-}

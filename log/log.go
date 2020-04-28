@@ -7,11 +7,23 @@ import (
 	"strings"
 )
 
+type Options struct {
+
+}
+
+type LogManager struct {
+
+}
+
+var Manager *LogManager
+
+func (m *LogManager) Options(opt *Options) {
+
+}
+
 //Info.
 func Info(msg ...string) {
 	logPath := GetLogpath()
-	//sArr := strings.Split(logPath, "happyApp")
-	//logPath = sArr[1]
 
 	logMsg := "\033[32m[INFO]\033[0m [" + logPath + "] " + strings.Join(msg, "")
 	println(logMsg)
@@ -30,8 +42,6 @@ func Debug(msg interface{}) {
 //Error 错误日志.
 func Error(msg ...string) {
 	logPath := GetLogpath()
-	//sArr := strings.Split(logPath, "happyApp")
-	//logPath = sArr[1]
 
 	logMsg := "\033[31m[ERROR]\033[0m [" + logPath + "] " + strings.Join(msg, "")
 	println(logMsg)
@@ -40,8 +50,6 @@ func Error(msg ...string) {
 //WARNING .
 func WARNING(msg ...string) {
 	logPath := GetLogpath()
-	//sArr := strings.Split(logPath, "happyApp")
-	//logPath = sArr[1]
 
 	logMsg := "\033[33m[WARNING]\033[0m [" + logPath + "] " + strings.Join(msg, "")
 	println(logMsg)

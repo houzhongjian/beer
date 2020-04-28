@@ -1,4 +1,4 @@
-package beer
+package conf
 
 import (
 	"io/ioutil"
@@ -9,29 +9,31 @@ import (
 	"sync"
 )
 
-type configManager struct {
+type ConfigManager struct {
 	lock sync.RWMutex
 	data map[string]interface{}
 }
 
-var conf *configManager
+var Manager *ConfigManager
 
 func init() {
-	conf = &configManager{
+	conf := &ConfigManager{
 		lock: sync.RWMutex{},
 		data: make(map[string]interface{}),
 	}
+
+	Manager = conf
 }
 
-func Loadini(iniPath string) {
+func (c *ConfigManager) Loadini(iniPath string) {
 	_, err := os.Stat(iniPath)
 	if err != nil {
 		panic(err)
 	}
-	conf.loadini(iniPath)
+	c.loadini(iniPath)
 }
 
-func (c *configManager) loadini(iniPath string) {
+func (c *ConfigManager) loadini(iniPath string) {
 	b, err := ioutil.ReadFile(iniPath)
 	if err != nil {
 		panic(err)
@@ -57,13 +59,13 @@ func (c *configManager) loadini(iniPath string) {
 	}
 }
 
-func (c *configManager) setConf(key, val string) {
+func (c *ConfigManager) setConf(key, val string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.data[key] = val
 }
 
-func (c *configManager) parseLine(line string) (key string, value string) {
+func (c *ConfigManager) parseLine(line string) (key string, value string) {
 	key = line
 	index := strings.Index(line, "=")
 	if index > 0 {
@@ -74,7 +76,7 @@ func (c *configManager) parseLine(line string) (key string, value string) {
 	return key, value
 }
 
-func (c *configManager) GetString(key string) string {
+func (c *ConfigManager) GetString(key string) string {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	i, ok := c.data[key]
@@ -85,7 +87,7 @@ func (c *configManager) GetString(key string) string {
 	return i.(string)
 }
 
-func (c *configManager) GetInt(key string) int {
+func (c *ConfigManager) GetInt(key string) int {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	i, ok := c.data[key]
@@ -101,13 +103,8 @@ func (c *configManager) GetInt(key string) int {
 	return n
 }
 
-func (c *configManager) Set(key string, val interface{}) {
+func (c *ConfigManager) Set(key string, val interface{}) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.data[key] = val
-}
-
-//Config 获取config管理器对象..
-func Config() *configManager {
-	return conf
 }
